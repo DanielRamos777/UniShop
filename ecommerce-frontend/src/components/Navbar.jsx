@@ -1,20 +1,30 @@
+import React, { useContext, useState } from "react";
 import { Link } from "react-router-dom";
-import { useContext } from "react";
-import { CartContext } from "../context/CartContext"; 
+import { CartContext } from "../context/CartContext";
 import "./Navbar.css";
 
 function Navbar() {
-  const { cartCount } = useContext(CartContext); // ⬅️ Usamos el contexto
+  const { cartCount } = useContext(CartContext);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   return (
     <nav className="navbar">
-      <h1 className="logo">UniShop</h1>
-      <ul className="nav-links">
+      <div className="navbar-logo">UniShop</div>
+      <button
+        className="navbar-toggle"
+        onClick={() => setMenuOpen(!menuOpen)}
+        aria-label="Abrir menú"
+        aria-expanded={menuOpen}
+      >
+        ☰
+      </button>
+      <ul className={`navbar-links ${menuOpen ? "active" : ""}`}>
         <li><Link to="/">Inicio</Link></li>
         <li><Link to="/productos">Productos</Link></li>
         <li>
           <Link to="/carrito">
-            🛒 Carrito {cartCount > 0 && <span>({cartCount})</span>}
+            Carrito
+            <span className="cart-badge">{cartCount}</span>
           </Link>
         </li>
         <li><Link to="/login">Login</Link></li>
@@ -24,3 +34,4 @@ function Navbar() {
 }
 
 export default Navbar;
+

@@ -1,26 +1,8 @@
 body {
   margin: 0;
-  font-family: Arial, sans-serif;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
   background: #f9f9f9;
+  color: #222;
 }
 
-/* navbar simple */
-nav {
-  background: #222;
-  padding: 10px;
-}
-
-nav ul {
-  display: flex;
-  list-style: none;
-  gap: 15px;
-}
-
-nav a {
-  color: white;
-  text-decoration: none;
-}
-
-nav a:hover {
-  color: #00bcd4;
-}
+/* Nota: estilos de navbar específicos están en components/Navbar.css */

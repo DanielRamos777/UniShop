@@ -2,7 +2,8 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { CartProvider } from "./context/CartContext";
 import Navbar from "./components/Navbar";
 import Cart from "./pages/Cart";
-import ProductList from "./pages/ProductList";
+import ProductList from "./components/ProductList";
+import LoginForm from "./pages/LoginForm";
 
 function App() {
   return (
@@ -13,7 +14,7 @@ function App() {
           <Route path="/" element={<h2>Bienvenido a UniShop</h2>} />
           <Route path="/productos" element={<ProductList />} />
           <Route path="/carrito" element={<Cart />} />
-          <Route path="/login" element={<h2>Login (pendiente)</h2>} />
+          <Route path="/login" element={<LoginForm />} />
         </Routes>
       </Router>
     </CartProvider>
