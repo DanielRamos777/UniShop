@@ -33,6 +33,16 @@
   margin: 0.5rem 0;
 }
 
+.stock-ok {
+  color: #2e7d32;
+  font-weight: 600;
+}
+
+.stock-out {
+  color: #c62828;
+  font-weight: 600;
+}
+
 .product-card button {
   background: #00bcd4;
   color: #fff;
@@ -47,6 +57,12 @@
 
 .product-card button:hover {
   background: #0097a7;
+}
+
+.product-card button:disabled {
+  background: #cfd8dc;
+  color: #546e7a;
+  cursor: not-allowed;
 }
 
 .product-card:hover {

@@ -1,20 +1,21 @@
-import React, { createContext, useState, useEffect } from "react";
+import React, { createContext, useEffect, useState } from "react";
 
 export const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
-  // Leer carrito desde localStorage al iniciar
   const [cart, setCart] = useState(() => {
-    const saved = localStorage.getItem("cart");
-    return saved ? JSON.parse(saved) : [];
+    try {
+      const saved = localStorage.getItem("cart");
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
   });
 
-  // Guardar carrito en localStorage cada vez que cambie
   useEffect(() => {
     localStorage.setItem("cart", JSON.stringify(cart));
   }, [cart]);
 
-  // 1. Agregar producto y aumentar cantidad si ya existe
   const addToCart = (product) => {
     setCart((prevCart) => {
       const exists = prevCart.find((item) => item.id === product.id);
@@ -24,46 +25,32 @@ export const CartProvider = ({ children }) => {
             ? { ...item, cantidad: item.cantidad + 1 }
             : item
         );
-      } else {
-        return [...prevCart, { ...product, cantidad: 1 }];
       }
+      return [...prevCart, { ...product, cantidad: 1 }];
     });
   };
 
-  // 2. Contador total de productos en el carrito
   const cartCount = cart.reduce((acc, item) => acc + item.cantidad, 0);
 
-  // 3. Eliminar producto del carrito
   const removeFromCart = (id) => {
     setCart((prevCart) => prevCart.filter((item) => item.id !== id));
   };
 
-  // 4. Actualizar cantidad de un producto
   const updateQuantity = (id, cantidad) => {
+    const safeValue = Math.max(1, Number(cantidad) || 1);
     setCart((prevCart) =>
-      prevCart.map((item) =>
-        item.id === id ? { ...item, cantidad } : item
-      )
+      prevCart.map((item) => (item.id === id ? { ...item, cantidad: safeValue } : item))
     );
   };
 
-  // 5. Vaciar carrito
-  const clearCart = () => {
-    setCart([]);
-  };
+  const clearCart = () => setCart([]);
 
   return (
     <CartContext.Provider
-      value={{
-        cart,
-        addToCart,
-        cartCount,
-        removeFromCart,
-        updateQuantity,
-        clearCart, //  ahora está disponible en el contexto
-      }}
+      value={{ cart, addToCart, cartCount, removeFromCart, updateQuantity, clearCart }}
     >
       {children}
     </CartContext.Provider>
   );
 };
+

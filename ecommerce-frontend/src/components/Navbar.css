@@ -55,6 +55,25 @@
   font-weight: bold;
 }
 
+.logout-button {
+  background: none;
+  border: 1px solid #00bcd4;
+  color: #00bcd4;
+  padding: 0.35rem 0.9rem;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: background 0.2s ease, color 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.logout-button:hover {
+  background: #00bcd4;
+  color: #222;
+}
+
 .navbar-toggle {
   display: none;
   background: none;

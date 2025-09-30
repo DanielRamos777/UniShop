@@ -8,23 +8,23 @@ function LoginForm() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
-  const validarEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const validarEmail = (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      if (!validarEmail(email)) return setError("Email inválido");
+      if (!validarEmail(email)) return setError("Email invalido");
       await login(email, password);
       setError("");
     } catch (err) {
-      setError(err.message || "No se pudo iniciar sesión");
+      setError(err.message || "No se pudo iniciar sesion");
     }
   };
 
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
-      if (!validarEmail(email)) return setError("Email inválido");
+      if (!validarEmail(email)) return setError("Email invalido");
       await register(email, password);
       setError("");
     } catch (err) {
@@ -39,30 +39,39 @@ function LoginForm() {
 
   return (
     <div className="login-form">
-      <h2>Iniciar sesión</h2>
+      <h2>Iniciar sesion</h2>
       {user ? (
         <p>Bienvenido, {user.email}</p>
       ) : (
-        <form onSubmit={handleLogin}>
-          <input
-            type="email"
-            placeholder="Correo electrónico"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-          <input
-            type="password"
-            placeholder="Contraseña"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-          <button type="submit">Iniciar sesión</button>
-          <button type="button" onClick={handleRegister}>Registrarse</button>
-          <button type="button" onClick={handleGoogleLogin}>Login con Google</button>
-          {error && <p style={{ color: "#ff8080" }}>{error}</p>}
-        </form>
+        <>
+          <form onSubmit={handleLogin}>
+            <input
+              type="email"
+              placeholder="Correo electronico"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+            <input
+              type="password"
+              placeholder="Contrasena"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+            <button type="submit">Iniciar sesion</button>
+            <button type="button" onClick={handleRegister}>
+              Registrarse
+            </button>
+            <button type="button" onClick={handleGoogleLogin}>
+              Login con Google
+            </button>
+            {error && <p style={{ color: "#ff8080" }}>{error}</p>}
+          </form>
+          <p className="admin-hint">
+            Acceso admin: <strong>admin@unishop.com</strong> / <strong>admin123</strong>
+          </p>
+        </>
       )}
     </div>
   );

@@ -2,6 +2,7 @@ import { useContext, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { CartContext } from "../context/CartContext";
 import { AuthContext } from "../context/AuthContext";
+import { ProductContext } from "../context/ProductContext";
 import "./Checkout.css";
 
 const paymentOptions = [
@@ -32,6 +33,7 @@ const emptyForm = {
 function Checkout() {
   const { cart, clearCart } = useContext(CartContext);
   const { user } = useContext(AuthContext);
+  const { decrementStock } = useContext(ProductContext);
   const [form, setForm] = useState(emptyForm);
   const [paymentMethod, setPaymentMethod] = useState("");
   const [processing, setProcessing] = useState(false);
@@ -69,6 +71,7 @@ function Checkout() {
         total: Number(totalToPay.toFixed(2)),
         userEmail: user?.email || "invitado",
         shipping: shippingData,
+        status: "pendiente",
         payment: {
           method: selectedOption.id,
           label: selectedOption.label,
@@ -80,6 +83,7 @@ function Checkout() {
       storedOrders.push(newOrder);
       localStorage.setItem("orders", JSON.stringify(storedOrders));
       setOrder(newOrder);
+      orderItems.forEach((item) => decrementStock(item.id, item.cantidad || 1));
       clearCart();
       setForm({ ...emptyForm });
       setPaymentMethod("");
@@ -93,15 +97,15 @@ function Checkout() {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (cart.length === 0) {
-      setError("Tu carrito está vacío.");
+      setError("Tu carrito esta vacio.");
       return;
     }
     if (!paymentMethod) {
-      setError("Selecciona un método de pago.");
+      setError("Selecciona un metodo de pago.");
       return;
     }
     if (!form.nombre || !form.direccion || !form.ciudad || !form.telefono) {
-      setError("Completa todos los datos de envío.");
+      setError("Completa todos los datos de envio.");
       return;
     }
 
@@ -111,7 +115,7 @@ function Checkout() {
     const chosen = paymentOptions.find((option) => option.id === paymentMethod);
     if (!chosen) {
       setProcessing(false);
-      setError("Método de pago no válido.");
+      setError("Metodo de pago no valido.");
       return;
     }
 
@@ -121,9 +125,9 @@ function Checkout() {
   if (order) {
     return (
       <div className="checkout checkout-success">
-        <h2>¡Compra exitosa!</h2>
+        <h2>Compra exitosa!</h2>
         <p>
-          Tu pedido <strong>{order.id}</strong> se pagó con {order.payment.label}.
+          Tu pedido <strong>{order.id}</strong> se pago con {order.payment.label}.
         </p>
         <div className="success-details">
           <p>
@@ -134,7 +138,7 @@ function Checkout() {
           </p>
         </div>
         <div className="success-shipping">
-          <h3>Envío a</h3>
+          <h3>Envio a</h3>
           <p>{order.shipping.nombre}</p>
           <p>
             {order.shipping.direccion}, {order.shipping.ciudad}
@@ -154,7 +158,7 @@ function Checkout() {
       <div className="checkout-grid">
         <form className="checkout-form" onSubmit={handleSubmit}>
           <section className="form-section">
-            <h3>Datos de envío</h3>
+            <h3>Datos de envio</h3>
             <input
               type="text"
               name="nombre"
@@ -166,7 +170,7 @@ function Checkout() {
             <input
               type="text"
               name="direccion"
-              placeholder="Dirección"
+              placeholder="Direccion"
               value={form.direccion}
               onChange={handleChange}
               required
@@ -182,7 +186,7 @@ function Checkout() {
             <input
               type="tel"
               name="telefono"
-              placeholder="Teléfono"
+              placeholder="Telefono"
               value={form.telefono}
               onChange={handleChange}
               required
@@ -190,7 +194,7 @@ function Checkout() {
           </section>
 
           <section className="form-section">
-            <h3>Método de pago</h3>
+            <h3>Metodo de pago</h3>
             <div className="payment-methods">
               {paymentOptions.map((option) => (
                 <label
@@ -231,7 +235,7 @@ function Checkout() {
         <aside className="order-summary">
           <h3>Resumen de pedido</h3>
           {cart.length === 0 ? (
-            <p>Tu carrito está vacío.</p>
+            <p>Tu carrito esta vacio.</p>
           ) : (
             <div className="summary-items">
               {cart.map((p) => (
@@ -251,7 +255,7 @@ function Checkout() {
             <span>S/ {subtotal.toFixed(2)}</span>
           </div>
           <div className="summary-line">
-            <span>Envío</span>
+            <span>Envio</span>
             <span>{shippingCost === 0 ? "Gratis" : `S/ ${shippingCost.toFixed(2)}`}</span>
           </div>
           <div className="summary-total">
@@ -265,3 +269,4 @@ function Checkout() {
 }
 
 export default Checkout;
+
