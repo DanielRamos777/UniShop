@@ -71,6 +71,27 @@
   font-size: 1.2rem;
 }
 
+.cart-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+.checkout-link {
+  display: inline-block;
+  background: #00bcd4;
+  color: #fff;
+  text-decoration: none;
+  padding: 0.7rem 1.4rem;
+  border-radius: 6px;
+  font-weight: 600;
+  transition: background 0.2s ease;
+}
+
+.checkout-link:hover {
+  background: #0097a7;
+}
+
 @media (max-width: 640px) {
   .cart-item {
     grid-template-columns: 1fr;
@@ -80,4 +101,3 @@
     justify-content: space-between;
   }
 }
-
