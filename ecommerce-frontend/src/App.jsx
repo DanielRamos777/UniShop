@@ -4,6 +4,8 @@ import Navbar from "./components/Navbar";
 import Cart from "./pages/Cart";
 import ProductList from "./components/ProductList";
 import LoginForm from "./pages/LoginForm";
+import UserProfile from "./pages/UserProfile";
+import Checkout from "./pages/Checkout";
 
 function App() {
   return (
@@ -15,6 +17,8 @@ function App() {
           <Route path="/productos" element={<ProductList />} />
           <Route path="/carrito" element={<Cart />} />
           <Route path="/login" element={<LoginForm />} />
+          <Route path="/perfil" element={<UserProfile />} />
+          <Route path="/checkout" element={<Checkout />} />
         </Routes>
       </Router>
     </CartProvider>

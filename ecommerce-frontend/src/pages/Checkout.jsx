@@ -1,9 +1,11 @@
 import { useState, useContext } from "react";
 import { CartContext } from "../context/CartContext";
+import { AuthContext } from "../context/AuthContext";
 import "./Checkout.css";
 
 function Checkout() {
   const { cart, clearCart } = useContext(CartContext);
+  const { user } = useContext(AuthContext);
   const [form, setForm] = useState({
     nombre: "",
     direccion: "",
@@ -22,6 +24,20 @@ function Checkout() {
     e.preventDefault();
     // Simula éxito de compra
     setExito(true);
+    // Guardar pedido en localStorage (historial)
+    try {
+      const orders = JSON.parse(localStorage.getItem("orders")) || [];
+      const order = {
+        id: `ORD-${Date.now()}`,
+        date: new Date().toISOString(),
+        items: cart,
+        total,
+        userEmail: user?.email || "guest",
+        shipping: form,
+      };
+      orders.push(order);
+      localStorage.setItem("orders", JSON.stringify(orders));
+    } catch {}
     clearCart(); // Limpia el carrito desde el contexto
   };
 
@@ -93,4 +109,3 @@ function Checkout() {
 }
 
 export default Checkout;
-

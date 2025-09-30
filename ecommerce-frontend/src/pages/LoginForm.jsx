@@ -1,46 +1,47 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { AuthContext } from "../context/AuthContext";
 import "./LoginForm.css";
 
 function LoginForm() {
+  const { user, login, register, loginWithGoogle } = useContext(AuthContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [usuario, setUsuario] = useState(() => {
-    const saved = localStorage.getItem("usuario");
-    return saved ? JSON.parse(saved) : null;
-  });
 
-  const validarEmail = (email) =>
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const validarEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    if (!validarEmail(email)) {
-      setError("Email inválido");
-      return;
+    try {
+      if (!validarEmail(email)) return setError("Email inválido");
+      await login(email, password);
+      setError("");
+    } catch (err) {
+      setError(err.message || "No se pudo iniciar sesión");
     }
-    if (!password) {
-      setError("La contraseña no puede estar vacía");
-      return;
-    }
-    const user = { email };
-    setUsuario(user);
-    localStorage.setItem("usuario", JSON.stringify(user));
-    setError("");
   };
 
-  const handleGoogleLogin = () => {
-    const user = { email: "googleuser@correo.com" };
-    setUsuario(user);
-    localStorage.setItem("usuario", JSON.stringify(user));
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    try {
+      if (!validarEmail(email)) return setError("Email inválido");
+      await register(email, password);
+      setError("");
+    } catch (err) {
+      setError(err.message || "No se pudo registrar");
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    await loginWithGoogle();
     setError("");
   };
 
   return (
     <div className="login-form">
       <h2>Iniciar sesión</h2>
-      {usuario ? (
-        <p>Bienvenido, {usuario.email}</p>
+      {user ? (
+        <p>Bienvenido, {user.email}</p>
       ) : (
         <form onSubmit={handleLogin}>
           <input
@@ -58,10 +59,9 @@ function LoginForm() {
             required
           />
           <button type="submit">Iniciar sesión</button>
-          <button type="button" onClick={handleGoogleLogin}>
-            Login con Google
-          </button>
-          {error && <p style={{ color: "red" }}>{error}</p>}
+          <button type="button" onClick={handleRegister}>Registrarse</button>
+          <button type="button" onClick={handleGoogleLogin}>Login con Google</button>
+          {error && <p style={{ color: "#ff8080" }}>{error}</p>}
         </form>
       )}
     </div>
@@ -69,3 +69,4 @@ function LoginForm() {
 }
 
 export default LoginForm;
+
