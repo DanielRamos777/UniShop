@@ -6,3 +6,9 @@
 
 [build.environment]
   NODE_VERSION = "22"
+
+# 👇 Fix para React Router en Netlify
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
