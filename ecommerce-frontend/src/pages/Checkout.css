@@ -10,6 +10,50 @@
   margin-bottom: 2rem;
 }
 
+.checkout-progress {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.progress-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.75rem;
+  border-radius: 10px;
+  border: 1px solid #d7d7d7;
+  background: #fff;
+  font-size: 0.9rem;
+  transition: border 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+
+.progress-step.completed {
+  border-color: #00bcd4;
+  background: rgba(0, 188, 212, 0.12);
+  color: #007d8a;
+}
+
+.progress-step.current {
+  border-color: #0097a7;
+  background: rgba(0, 151, 167, 0.15);
+  color: #004d54;
+  font-weight: 600;
+}
+
+.progress-step .step-index {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+}
+
 .checkout-grid {
   display: grid;
   grid-template-columns: 1.4fr 1fr;
@@ -88,6 +132,54 @@
   color: #555;
 }
 
+.coupon-section {
+  background: linear-gradient(135deg, rgba(0, 188, 212, 0.12), rgba(0, 151, 167, 0.12));
+  border: 1px solid rgba(0, 151, 167, 0.25);
+}
+
+.coupon-form {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.coupon-form input {
+  flex: 1 0 180px;
+  min-width: 160px;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  border: 1px solid #a9d9df;
+}
+
+.coupon-form button {
+  padding: 0.75rem 1.2rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  background: #0097a7;
+  color: #fff;
+  transition: background 0.2s ease;
+}
+
+.coupon-form button:hover {
+  background: #007d8a;
+}
+
+.link-button {
+  background: none;
+  border: none;
+  color: #0097a7;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.coupon-feedback {
+  margin-top: 0.75rem;
+  color: #006975;
+  font-size: 0.95rem;
+}
+
 .submit-button {
   background: linear-gradient(135deg, #00bcd4, #0097a7);
   color: #fff;
@@ -161,11 +253,56 @@
   font-size: 1rem;
 }
 
+.summary-line.discount {
+  color: #007d8a;
+}
+
 .summary-total {
   font-weight: 700;
   font-size: 1.1rem;
   border-top: 1px solid #e0e0e0;
   padding-top: 1rem;
+}
+
+.recommendations {
+  margin-top: 1.5rem;
+  text-align: left;
+}
+
+.recommendations h4 {
+  margin-bottom: 0.75rem;
+  color: #222;
+}
+
+.recommendation-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1rem;
+}
+
+.suggestion-card {
+  padding: 1rem;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+}
+
+.suggestion-card h5 {
+  margin: 0.5rem 0 0.3rem;
+}
+
+.suggestion-card button {
+  margin-top: 0.5rem;
+  padding: 0.6rem 1rem;
+  border: none;
+  border-radius: 6px;
+  background: #00bcd4;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.suggestion-card button:hover {
+  background: #0097a7;
 }
 
 .checkout-success {
@@ -226,9 +363,40 @@
     padding: 0.5rem;
   }
 
+  .checkout-progress {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .form-section,
   .order-summary {
     padding: 1.25rem;
   }
 }
 
+
+.success-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+.receipt-button {
+  background: #006494;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.9rem 1.6rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.receipt-button:hover {
+  background: #004d73;
+}
+
+.success-actions .continue-link {
+  margin-top: 0;
+}

@@ -92,6 +92,47 @@
   background: #0097a7;
 }
 
+.cart-suggestions {
+  margin-top: 1.5rem;
+}
+
+.cart-suggestions h3 {
+  margin-bottom: 1rem;
+  color: #222;
+}
+
+.suggestion-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+}
+
+.suggestion-card {
+  padding: 1rem;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  border: 1px solid rgba(0,188,212,0.15);
+}
+
+.suggestion-card h4 {
+  margin: 0.5rem 0 0.3rem;
+}
+
+.suggestion-card button {
+  margin-top: 0.6rem;
+  padding: 0.6rem 1rem;
+  border: none;
+  border-radius: 6px;
+  background: #00bcd4;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.suggestion-card button:hover {
+  background: #0097a7;
+}
+
 @media (max-width: 640px) {
   .cart-item {
     grid-template-columns: 1fr;

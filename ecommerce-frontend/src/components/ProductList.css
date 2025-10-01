@@ -91,3 +91,32 @@
     grid-template-columns: repeat(4, 1fr);
   }
 }
+.products-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.products-toolbar input[type="text"],
+.products-toolbar input[type="number"] {
+  padding: 0.6rem 0.9rem;
+  border: 1px solid #d0d7de;
+  border-radius: 8px;
+  min-width: 170px;
+}
+
+.availability-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-weight: 600;
+  color: #1f2933;
+}
+
+.products-empty {
+  margin-top: 2rem;
+  text-align: center;
+  color: #52606d;
+  font-weight: 600;
+}

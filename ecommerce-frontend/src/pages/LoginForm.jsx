@@ -1,5 +1,6 @@
 import { useContext, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
+import { sendSimulatedEmail } from "../utils/emailSimulator";
 import "./LoginForm.css";
 
 function LoginForm() {
@@ -25,7 +26,12 @@ function LoginForm() {
     e.preventDefault();
     try {
       if (!validarEmail(email)) return setError("Email invalido");
-      await register(email, password);
+      const profile = await register(email, password);
+      sendSimulatedEmail({
+        to: profile.email,
+        subject: "Bienvenido a UniShop",
+        body: "Hola, gracias por registrarte en UniShop. Tu cuenta esta lista para usar.",
+      });
       setError("");
     } catch (err) {
       setError(err.message || "No se pudo registrar");
@@ -41,7 +47,7 @@ function LoginForm() {
     <div className="login-form">
       <h2>Iniciar sesion</h2>
       {user ? (
-        <p>Bienvenido, {user.email}</p>
+        <p>Bienvenido, {user.displayName || user.email}</p>
       ) : (
         <>
           <form onSubmit={handleLogin}>
@@ -78,4 +84,3 @@ function LoginForm() {
 }
 
 export default LoginForm;
-

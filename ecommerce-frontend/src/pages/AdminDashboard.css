@@ -62,6 +62,8 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1rem;
+  gap: 1rem;
+  flex-wrap: wrap;
 }
 
 .link-button {
@@ -168,6 +170,40 @@ thead tr {
   background: #ff6b6b;
 }
 
+.inventory-toolbar {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.inventory-toolbar label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  font-weight: 600;
+  color: #1f2933;
+}
+
+.inventory-toolbar select {
+  padding: 0.55rem 0.8rem;
+  border: 1px solid #d0d7de;
+  border-radius: 8px;
+  min-width: 160px;
+}
+
+.stock-low-row {
+  background: #fff8e5;
+}
+
+.stock-out-row {
+  background: #ffeaea;
+}
+
+.stock-out-row td,
+.stock-low-row td {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
 td input[type="number"] {
   width: 100px;
   padding: 0.4rem;
@@ -184,6 +220,64 @@ details summary {
 details ul {
   margin: 0.5rem 0 0 0;
   padding-left: 1.2rem;
+}
+
+.orders-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: flex-end;
+}
+
+.filter-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.filter-group label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  font-weight: 600;
+  color: #1f2933;
+}
+
+.filter-group select,
+.filter-group input {
+  padding: 0.55rem 0.8rem;
+  border: 1px solid #d0d7de;
+  border-radius: 8px;
+  min-width: 160px;
+}
+
+.orders-pagination {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.orders-pagination button {
+  padding: 0.45rem 1rem;
+  border: none;
+  border-radius: 6px;
+  background: #0097a7;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.orders-pagination button:disabled {
+  background: #c9dee1;
+  cursor: not-allowed;
+}
+
+.orders-pagination span {
+  color: #52606d;
+  font-weight: 600;
 }
 
 .admin-locked {
@@ -210,5 +304,14 @@ details ul {
   table {
     min-width: 100%;
   }
-}
 
+  .orders-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .orders-pagination {
+    justify-content: center;
+  }
+}
+\n.inventory-feedback {\n  margin: 0.5rem 0 0;\n  color: #0f766e;\n  font-weight: 600;\n}\n\n.inventory-alert {\n  margin: 1rem 0;\n  padding: 0.9rem 1.2rem;\n  background: #fff4e5;\n  border: 1px solid #ffd599;\n  border-radius: 10px;\n  color: #8d5a00;\n  font-weight: 600;\n}\n\n.inventory-import {\n  margin: 1rem 0;\n  display: flex;\n  flex-direction: column;\n  gap: 0.75rem;\n}\n\n.inventory-import textarea {\n  width: 100%;\n  min-height: 150px;\n  border: 1px solid #c4dcec;\n  border-radius: 10px;\n  padding: 0.75rem;\n  font-family: inherit;\n  resize: vertical;\n}\n\n.import-actions {\n  display: flex;\n  gap: 0.75rem;\n  flex-wrap: wrap;\n}\n\n.import-actions button {\n  padding: 0.6rem 1.2rem;\n  border: none;\n  border-radius: 8px;\n  font-weight: 600;\n  cursor: pointer;\n  background: #0097a7;\n  color: #fff;\n  transition: background 0.2s ease;\n}\n\n.import-actions button:hover {\n  background: #007d8a;\n}\n\n.import-actions .secondary {\n  background: #e1ecf4;\n  color: #006494;\n  border: 1px solid #c4dcec;\n}\n\n.stock-log-list {\n  list-style: none;\n  padding: 0;\n  margin: 0;\n  display: flex;\n  flex-direction: column;\n  gap: 0.75rem;\n}\n\n.stock-log-list li {\n  border: 1px solid #e5e7eb;\n  border-radius: 10px;\n  padding: 0.8rem 1rem;\n  background: #f7fbff;\n}\n\n.stock-log-meta {\n  display: flex;\n  justify-content: space-between;\n  gap: 1rem;\n  color: #52606d;\n  font-size: 0.85rem;\n  margin-bottom: 0.4rem;\n}\n
