@@ -6,3 +6,59 @@ body {
 }
 
 /* Nota: estilos de navbar específicos están en components/Navbar.css */
+
+.toast-container {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  z-index: 2000;
+  pointer-events: none;
+}
+
+.toast {
+  min-width: 240px;
+  max-width: 320px;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  color: #0f172a;
+  background: #e2e8f0;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.15);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  pointer-events: auto;
+  font-weight: 600;
+}
+
+.toast button {
+  border: none;
+  background: transparent;
+  color: inherit;
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+.toast--success {
+  background: #dcfce7;
+  color: #065f46;
+}
+
+.toast--error {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.toast--warning {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.toast--info {
+  background: #e0f2fe;
+  color: #075985;
+}
+

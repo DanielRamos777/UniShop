@@ -1,6 +1,8 @@
-import { useContext, useMemo, useState, useEffect } from "react";
+ï»¿import { useContext, useMemo, useState, useEffect } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { ProductContext } from "../context/ProductContext";
+import { CurrencyContext } from "../context/CurrencyContext";
+import { ToastContext } from "../context/ToastContext";
 import "./AdminDashboard.css";
 
 const emptyProduct = {
@@ -8,6 +10,9 @@ const emptyProduct = {
   precio: "",
   stock: "",
   imagen: "",
+  categoria: "",
+  etiquetas: "",
+  descripcion: "",
 };
 
 const ORDER_STATUSES = ["pendiente", "preparando", "enviado", "entregado"];
@@ -19,8 +24,26 @@ function AdminDashboard() {
   const { isAdmin, user } = useContext(AuthContext);
   const { products, addProduct, updateProduct, removeProduct, setStock } =
     useContext(ProductContext);
+  const categoryOptions = useMemo(() => {
+    const unique = new Set(
+      products
+        .map((product) => product.categoria)
+        .filter((category) => Boolean(category))
+    );
+    return Array.from(unique).sort((a, b) => a.localeCompare(b));
+  }, [products]);
 
-  const [productForm, setProductForm] = useState(emptyProduct);
+  const tagSuggestions = useMemo(() => {
+    const unique = new Set();
+    products.forEach((product) => {
+      (product.etiquetas || []).forEach((tag) => {
+        if (tag) unique.add(tag);
+      });
+    });
+    return Array.from(unique).sort((a, b) => a.localeCompare(b));
+  }, [products]);
+
+  const [productForm, setProductForm] = useState(() => ({ ...emptyProduct }));
   const [editingId, setEditingId] = useState(null);
   const [orders, setOrders] = useState(() => {
     try {
@@ -122,24 +145,37 @@ function AdminDashboard() {
 
   const handleProductSubmit = (event) => {
     event.preventDefault();
-    if (!productForm.nombre || !productForm.precio || !productForm.stock) return;
+    if (!productForm.nombre || !productForm.precio || !productForm.stock) {
+      notify("Completa nombre, precio y stock para guardar el producto.", { type: "warning" });
+      return;
+    }
+
+    const normalizedTags = (productForm.etiquetas || "")
+      .split(",")
+      .map((tag) => tag.trim())
+      .filter((tag) => tag.length > 0);
 
     const payload = {
       nombre: productForm.nombre,
       precio: Number(productForm.precio),
       stock: Number(productForm.stock),
       imagen: productForm.imagen,
+      categoria: productForm.categoria || "General",
+      etiquetas: normalizedTags,
+      descripcion: productForm.descripcion || "",
     };
 
     if (editingId) {
       updateProduct(editingId, payload);
       setInventoryFeedback(`Producto ${productForm.nombre} actualizado.`);
+      notify(`Producto "${productForm.nombre}" actualizado.`, { type: "success" });
     } else {
       addProduct(payload);
       setInventoryFeedback(`Producto ${productForm.nombre} agregado.`);
+      notify(`Producto "${productForm.nombre}" agregado al catalogo.`, { type: "success" });
     }
 
-    setProductForm(emptyProduct);
+    setProductForm({ ...emptyProduct });
     setEditingId(null);
   };
 
@@ -149,28 +185,37 @@ function AdminDashboard() {
       precio: product.precio,
       stock: product.stock,
       imagen: product.imagen,
+      categoria: product.categoria || "",
+      etiquetas: Array.isArray(product.etiquetas) ? product.etiquetas.join(", ") : "",
+      descripcion: product.descripcion || "",
     });
     setEditingId(product.id);
   };
 
   const cancelEdit = () => {
     setEditingId(null);
-    setProductForm(emptyProduct);
+    setProductForm({ ...emptyProduct });
   };
 
   const handleDelete = (id) => {
     if (window.confirm("Eliminar este producto?")) {
+      const product = products.find((item) => item.id === id);
       removeProduct(id);
       setInventoryFeedback("Producto eliminado.");
+      notify(`Producto "${(product?.nombre || id)}" eliminado.`, { type: "info" });
     }
   };
 
   const handleStockUpdate = (id, value) => {
     const product = products.find((item) => item.id === id);
-    if (!product) return;
+    if (!product) {
+      notify("Producto no encontrado.", { type: "error" });
+      return;
+    }
     const nextStock = Number(value);
     if (!Number.isFinite(nextStock) || nextStock < 0) {
       setInventoryFeedback("Ingresa un stock valido (>= 0).");
+      notify("El stock debe ser un numero mayor o igual a cero.", { type: "warning" });
       return;
     }
     const previousStock = Number(product.stock || 0);
@@ -180,21 +225,25 @@ function AdminDashboard() {
     );
     if (!confirmed) {
       setInventoryFeedback("Actualizacion cancelada.");
+      notify("Actualizacion de stock cancelada.", { type: "info" });
       return;
     }
     setStock(id, nextStock);
-    setStockChanges((prev) => [
-      {
-        id,
-        nombre: product.nombre,
-        oldStock: previousStock,
-        newStock: nextStock,
-        date: new Date().toISOString(),
-        actor: user?.email || "admin",
-      },
-      ...prev,
-    ].slice(0, 50));
-    setInventoryFeedback(`Stock de ${product.nombre} actualizado (${previousStock} ? ${nextStock}).`);
+    setStockChanges((prev) =>
+      [
+        {
+          id,
+          nombre: product.nombre,
+          oldStock: previousStock,
+          newStock: nextStock,
+          date: new Date().toISOString(),
+          actor: user?.email || "admin",
+        },
+        ...prev,
+      ].slice(0, 50)
+    );
+    setInventoryFeedback(`Stock de ${product.nombre} actualizado (${previousStock} -> ${nextStock}).`);
+    notify(`Stock de "${product.nombre}" actualizado a ${nextStock}.`, { type: "success" });
   };
 
   const handleStatusChange = (orderId, status) => {
@@ -203,6 +252,7 @@ function AdminDashboard() {
         order.id === orderId ? { ...order, status } : order
       );
       localStorage.setItem("orders", JSON.stringify(updated));
+      notify(`Pedido ${orderId} actualizado a ${status}.`, { type: "success" });
       return updated;
     });
   };
@@ -212,8 +262,10 @@ function AdminDashboard() {
       const latest = JSON.parse(localStorage.getItem("orders")) || [];
       setOrders(latest);
       setInventoryFeedback("Pedidos refrescados.");
+      notify("Pedidos sincronizados.", { type: "info" });
     } catch (error) {
       console.warn("No se pudieron leer las ordenes", error);
+      notify("No se pudieron leer las ordenes desde el navegador.", { type: "error" });
     }
   };
 
@@ -221,6 +273,7 @@ function AdminDashboard() {
     const rawInput = bulkInput.trim();
     if (!rawInput) {
       setInventoryFeedback("Ingresa datos para importar.");
+      notify("Ingresa datos para importar.", { type: "warning" });
       return;
     }
 
@@ -243,6 +296,7 @@ function AdminDashboard() {
       }
     } catch (error) {
       setInventoryFeedback("Error al procesar datos: " + error.message);
+      notify("No se pudo procesar el archivo o texto proporcionado.", { type: "error" });
       return;
     }
 
@@ -251,8 +305,8 @@ function AdminDashboard() {
 
     entries.forEach((entry, index) => {
       const nombre = (entry.nombre || entry.name || "").trim();
-      const precioValue = Number(entry.precio ?? entry.price);
-      const stockValue = Number(entry.stock ?? entry.quantity ?? entry.qty);
+      const precioValue = Number(entry.precio || entry.price);
+      const stockValue = Number(entry.stock || entry.quantity || entry.qty);
       const imagen = (entry.imagen || entry.image || entry.url || "").trim();
 
       if (!nombre || Number.isNaN(precioValue) || Number.isNaN(stockValue)) {
@@ -272,19 +326,22 @@ function AdminDashboard() {
     if (imported) {
       const errorMessage = errors.length ? ` Se omitieron entradas: ${errors.join(", ")}.` : "";
       setInventoryFeedback(`Importados ${imported} productos.${errorMessage}`);
+      notify(`Importados ${imported} productos.${errorMessage}`, { type: "success" });
       setBulkInput("");
       setShowImport(false);
     } else {
       setInventoryFeedback("No se importaron productos validos.");
+      notify("No se importaron productos validos.", { type: "warning" });
     }
   };
 
   const clearStockLog = () => {
     if (!stockChanges.length) return;
-    if (window.confirm("¿Limpiar historial de cambios de stock?")) {
+    if (window.confirm("Limpiar historial de cambios de stock?")) {
       setStockChanges([]);
       localStorage.removeItem(STOCK_LOG_KEY);
       setInventoryFeedback("Historial de stock limpiado.");
+      notify("Historial de stock limpiado.", { type: "info" });
     }
   };
 
@@ -319,11 +376,12 @@ function AdminDashboard() {
           </div>
           <div className="metric">
             <span>Ventas registradas</span>
-            <strong>S/ {totalVentas.toFixed(2)}</strong>
+            <strong>{formatPrice(totalVentas)}</strong>
           </div>
         </div>
       </header>
 
+      {/* FORMULARIO PRODUCTOS */}
       <section className="admin-section">
         <div className="section-header">
           <h3>{editingId ? "Editar producto" : "Agregar producto"}</h3>
@@ -346,7 +404,7 @@ function AdminDashboard() {
             />
           </label>
           <label>
-            Precio (S/)
+            Precio base (PEN)
             <input
               type="number"
               step="0.01"
@@ -370,6 +428,34 @@ function AdminDashboard() {
             />
           </label>
           <label>
+            Categoria
+            <input
+              type="text"
+              list="admin-category-options"
+              value={productForm.categoria}
+              onChange={(e) =>
+                setProductForm((prev) => ({ ...prev, categoria: e.target.value }))
+              }
+              placeholder="Ej. Computadoras"
+            />
+          </label>
+          <label>
+            Etiquetas
+            <input
+              type="text"
+              value={productForm.etiquetas}
+              onChange={(e) =>
+                setProductForm((prev) => ({ ...prev, etiquetas: e.target.value }))
+              }
+              placeholder="Separar con coma (ej. gaming, rgb)"
+            />
+            {tagSuggestions.length > 0 && (
+              <span className="input-hint">
+                Sugerencias: {tagSuggestions.slice(0, 6).join(", ")}
+              </span>
+            )}
+          </label>
+          <label>
             URL de imagen
             <input
               type="url"
@@ -380,12 +466,31 @@ function AdminDashboard() {
               placeholder="https://..."
             />
           </label>
+          <label className="descripcion-field">
+            Descripcion
+            <textarea
+              rows="3"
+              value={productForm.descripcion}
+              onChange={(e) =>
+                setProductForm((prev) => ({ ...prev, descripcion: e.target.value }))
+              }
+              placeholder="Resumen corto para mostrar en la tienda"
+            ></textarea>
+          </label>
           <button type="submit">
             {editingId ? "Guardar cambios" : "Agregar producto"}
           </button>
         </form>
+        {categoryOptions.length > 0 && (
+          <datalist id="admin-category-options">
+            {categoryOptions.map((category) => (
+              <option key={category} value={category} />
+            ))}
+          </datalist>
+        )}
       </section>
 
+      {/* INVENTARIO */}
       <section className="admin-section">
         <div className="section-header">
           <h3>Inventario</h3>
@@ -410,7 +515,8 @@ function AdminDashboard() {
         {inventoryFeedback && <p className="inventory-feedback">{inventoryFeedback}</p>}
         {lowStockProducts.length > 0 && (
           <div className="inventory-alert">
-            Hay {lowStockProducts.length} productos con stock critico ({outOfStockCount} sin stock, {lowStockProducts.length - outOfStockCount} {'<='} {STOCK_LOW_THRESHOLD}).
+            Hay {lowStockProducts.length} productos con stock critico ({outOfStockCount} sin stock,{" "}
+            {lowStockProducts.length - outOfStockCount} &lt;= {STOCK_LOW_THRESHOLD}).
           </div>
         )}
         {showImport && (
@@ -470,7 +576,7 @@ function AdminDashboard() {
                         <img src={product.imagen} alt={product.nombre} />
                         <span>{product.nombre}</span>
                       </td>
-                      <td>S/ {Number(product.precio).toFixed(2)}</td>
+                      <td>{formatPrice(Number(product.precio))}</td>
                       <td>
                         <input
                           type="number"
@@ -494,6 +600,7 @@ function AdminDashboard() {
         )}
       </section>
 
+      {/* REGISTRO STOCK */}
       <section className="admin-section">
         <div className="section-header">
           <h3>Registro de cambios de stock</h3>
@@ -514,7 +621,7 @@ function AdminDashboard() {
                   <span>{entry.actor}</span>
                 </div>
                 <p>
-                  {entry.nombre}: {entry.oldStock} ? {entry.newStock}
+                  {entry.nombre}: {entry.oldStock} -&gt; {entry.newStock}
                 </p>
               </li>
             ))}
@@ -522,6 +629,7 @@ function AdminDashboard() {
         )}
       </section>
 
+      {/* PEDIDOS */}
       <section className="admin-section">
         <div className="section-header">
           <h3>Pedidos</h3>
@@ -574,7 +682,7 @@ function AdminDashboard() {
                     <td>{order.id}</td>
                     <td>{order.userEmail}</td>
                     <td>{new Date(order.date).toLocaleString()}</td>
-                    <td>S/ {Number(order.total || 0).toFixed(2)}</td>
+                    <td>{formatPrice(Number(order.total || 0))}</td>
                     <td>
                       <select
                         value={order.status || "pendiente"}
@@ -593,7 +701,7 @@ function AdminDashboard() {
                         <ul>
                           {order.items.map((item) => (
                             <li key={item.id}>
-                              {item.nombre} x {item.cantidad} - S/ {(item.precio * item.cantidad).toFixed(2)}
+                              {item.nombre} x {item.cantidad} - {formatPrice(item.precio * item.cantidad)}
                             </li>
                           ))}
                         </ul>
@@ -632,3 +740,17 @@ function AdminDashboard() {
 }
 
 export default AdminDashboard;
+
+
+
+
+
+
+
+
+
+
+
+
+
+

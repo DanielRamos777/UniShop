@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { CartContext } from "../context/CartContext";
 import { AuthContext } from "../context/AuthContext";
 import { ProductContext } from "../context/ProductContext";
+import { CurrencyContext } from "../context/CurrencyContext";
 import { sendSimulatedEmail } from "../utils/emailSimulator";
 import "./Checkout.css";
 
@@ -43,6 +44,8 @@ function Checkout() {
   const { cart, clearCart, addToCart } = useContext(CartContext);
   const { user, updateUserProfile } = useContext(AuthContext);
   const { products, decrementStock } = useContext(ProductContext);
+  const { formatPrice } = useContext(CurrencyContext);
+  const formatAmount = (value) => formatPrice(Number(value) || 0);
   const [form, setForm] = useState(emptyForm);
   const [paymentMethod, setPaymentMethod] = useState("");
   const [processing, setProcessing] = useState(false);
@@ -187,8 +190,8 @@ function Checkout() {
             (user.displayName || shippingData.nombre || "" ) +
             ", tu pedido " +
             orderId +
-            " se registro por S/ " +
-            newOrder.total.toFixed(2) +
+            " se registro por " +
+            formatAmount(newOrder.total) +
             ". Gracias por comprar en UniShop.",
         });
       }
@@ -252,7 +255,7 @@ function Checkout() {
             <article key={product.id} className="product-card suggestion-card">
               <img src={product.imagen} alt={product.nombre} />
               <h5>{product.nombre}</h5>
-              <p>S/ {product.precio.toFixed(2)}</p>
+              <p>{formatAmount(product.precio)}</p>
               <button type="button" onClick={() => addToCart(product)}>
                 Agregar al carrito
               </button>
@@ -274,13 +277,13 @@ function Checkout() {
       "Items:",
     ];
     order.items.forEach((item, index) => {
-      lines.push((index + 1) + ". " + item.nombre + " x " + item.cantidad + " - S/ " + (item.precio * item.cantidad).toFixed(2));
+      lines.push((index + 1) + ". " + item.nombre + " x " + item.cantidad + " - " + formatAmount(item.precio * item.cantidad));
     });
     lines.push(" ");
-    lines.push("Subtotal: S/ " + order.subtotal.toFixed(2));
-    lines.push("Descuento: S/ " + (order.discount || 0).toFixed(2));
-    lines.push("Envio: S/ " + order.shippingCost.toFixed(2));
-    lines.push("Total: S/ " + order.total.toFixed(2));
+    lines.push("Subtotal: " + formatAmount(order.subtotal));
+    lines.push("Descuento: " + formatAmount(order.discount || 0));
+    lines.push("Envio: " + formatAmount(order.shippingCost));
+    lines.push("Total: " + formatAmount(order.total));
     lines.push("Estado: " + (order.status || "pendiente"));
     const content = lines.join("\n");
     const blob = new Blob([content], { type: "application/pdf" });
@@ -307,11 +310,11 @@ function Checkout() {
               <strong>Referencia de pago:</strong> {order.payment.reference}
             </p>
             <p>
-              <strong>Total pagado:</strong> S/ {order.total.toFixed(2)}
+              <strong>Total pagado:</strong> {formatAmount(order.total)}
             </p>
             {order.discount > 0 && (
               <p>
-                <strong>Descuento aplicado:</strong> -S/ {order.discount.toFixed(2)}
+                <strong>Descuento aplicado:</strong> -{formatAmount(order.discount)}
               </p>
             )}
             {user && (
@@ -442,7 +445,7 @@ function Checkout() {
             type="submit"
             disabled={cart.length === 0 || processing}
           >
-            {processing ? "Procesando pago..." : "Pagar S/ " + totalToPay.toFixed(2)}
+            {processing ? "Procesando pago..." : "Pagar " + formatAmount(totalToPay)}
           </button>
         </form>
 
@@ -461,7 +464,7 @@ function Checkout() {
                     <strong>{product.nombre}</strong>
                     <span>Cant. {product.cantidad}</span>
                   </div>
-                  <span>S/ {(product.precio * product.cantidad).toFixed(2)}</span>
+                  <span>{formatAmount(product.precio * product.cantidad)}</span>
                 </div>
               ))}
             </div>
@@ -469,21 +472,21 @@ function Checkout() {
 
           <div className="summary-line">
             <span>Subtotal</span>
-            <span>S/ {subtotal.toFixed(2)}</span>
+            <span>{formatAmount(subtotal)}</span>
           </div>
           {cappedDiscount > 0 && (
             <div className="summary-line discount">
               <span>Descuento {appliedCoupon?.code ? "(" + appliedCoupon.code + ")" : ""}</span>
-              <span>- S/ {cappedDiscount.toFixed(2)}</span>
+              <span>- {formatAmount(cappedDiscount)}</span>
             </div>
           )}
           <div className="summary-line">
             <span>Envio</span>
-            <span>{effectiveShipping === 0 ? "Gratis" : "S/ " + effectiveShipping.toFixed(2)}</span>
+            <span>{effectiveShipping === 0 ? "Gratis" : formatAmount(effectiveShipping)}</span>
           </div>
           <div className="summary-total">
             <span>Total a pagar</span>
-            <span>S/ {totalToPay.toFixed(2)}</span>
+            <span>{formatAmount(totalToPay)}</span>
           </div>
         </aside>
       </div>

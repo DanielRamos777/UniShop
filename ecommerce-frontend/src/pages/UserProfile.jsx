@@ -1,5 +1,6 @@
 import { useContext, useEffect, useMemo, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
+import { CurrencyContext } from "../context/CurrencyContext";
 import "./UserProfile.css";
 
 const ORDER_STATUSES = ["pendiente", "preparando", "enviado", "entregado"];
@@ -16,6 +17,7 @@ const formatDate = (value) => {
 
 function UserProfile() {
   const { user, logout, updateUserProfile } = useContext(AuthContext);
+  const { formatPrice } = useContext(CurrencyContext);
   const [editing, setEditing] = useState(false);
   const [feedback, setFeedback] = useState("");
   const [profileForm, setProfileForm] = useState({
@@ -143,7 +145,7 @@ function UserProfile() {
           </div>
           <div>
             <span>Total filtrado:</span>
-            <strong>S/ {totalGastado.toFixed(2)}</strong>
+            <strong>{formatPrice(totalGastado)}</strong>
           </div>
         </div>
         <div className="profile-actions">
@@ -252,7 +254,7 @@ function UserProfile() {
                   </div>
                   <div className="order-meta">
                     <span>Fecha: {formatDate(order.date)}</span>
-                    <span>Total: S/ {order.total?.toFixed(2)}</span>
+                    <span>Total: {formatPrice(order.total || 0)}</span>
                     {order.coupon && <span>Cupon: {order.coupon}</span>}
                   </div>
                   <details>
@@ -260,7 +262,7 @@ function UserProfile() {
                     <ul>
                       {order.items.map((item) => (
                         <li key={item.id}>
-                          {item.nombre} x {item.cantidad} - S/ {(item.precio * item.cantidad).toFixed(2)}
+                          {item.nombre} x {item.cantidad} - {formatPrice(item.precio * item.cantidad)}
                         </li>
                       ))}
                     </ul>

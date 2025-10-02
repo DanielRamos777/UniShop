@@ -2,6 +2,160 @@
   padding: 2rem;
 }
 
+.products-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.products-subtitle {
+  margin: 0.4rem 0 0;
+  color: #52606d;
+  max-width: 520px;
+}
+
+.result-count {
+  background: #e2e8f0;
+  color: #1e293b;
+  padding: 0.3rem 0.9rem;
+  border-radius: 999px;
+  font-weight: 600;
+}
+
+.products-filters {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.filter-row label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  font-weight: 600;
+  color: #1f2933;
+  min-width: 160px;
+}
+
+.filter-row input,
+.filter-row select {
+  padding: 0.6rem 0.75rem;
+  border: 1px solid #d0d7de;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 0.95rem;
+}
+
+.filter-row input:focus,
+.filter-row select:focus {
+  outline: none;
+  border-color: #00bcd4;
+  box-shadow: 0 0 0 3px rgba(0, 188, 212, 0.2);
+}
+
+.availability-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-top: 1.9rem;
+  font-weight: 600;
+  color: #1f2933;
+}
+
+.tag-filter {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.tag-filter-title {
+  font-weight: 600;
+  color: #1f2933;
+}
+
+.tag-filter-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.tag-chip {
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  border-radius: 999px;
+  padding: 0.35rem 0.9rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.2s ease, border 0.2s ease, color 0.2s ease;
+}
+
+.tag-chip:hover {
+  border-color: #00bcd4;
+}
+
+.tag-chip--active {
+  background: #00bcd4;
+  border-color: #00bcd4;
+  color: #0f172a;
+}
+
+.active-filters {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  background: #e0f2f8;
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.active-filters-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.active-filter-chip {
+  background: #fff;
+  border: 1px solid #bae6fd;
+  color: #0369a1;
+  padding: 0.3rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.reset-filters {
+  background: none;
+  border: 1px solid #0f172a;
+  color: #0f172a;
+  font-weight: 600;
+  padding: 0.35rem 0.9rem;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.reset-filters:hover {
+  background: #0f172a;
+  color: #fff;
+}
+
 .product-grid {
   display: grid;
   gap: 2rem;
@@ -11,15 +165,52 @@
 .product-card {
   background: #fff;
   border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   padding: 1.5rem;
   text-align: center;
   transition: box-shadow 0.2s, transform 0.2s;
 }
 
+.product-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.product-category {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #0ea5e9;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.wishlist-button {
+  background: none;
+  border: 1px solid #94a3b8;
+  color: #475569;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, border 0.2s ease;
+}
+
+.wishlist-button:hover {
+  border-color: #f87171;
+  color: #b91c1c;
+}
+
+.wishlist-button.is-active {
+  background: #ffe4e6;
+  border-color: #f472b6;
+  color: #be185d;
+}
+
 .product-card img {
-  width: 100px;
-  height: 100px;
+  width: 120px;
+  height: 120px;
   object-fit: contain;
   margin-bottom: 1rem;
   transition: transform 0.25s ease;
@@ -27,6 +218,12 @@
 
 .product-card h3 {
   margin: 0.5rem 0;
+}
+
+.product-description {
+  min-height: 2.6rem;
+  color: #4b5563;
+  font-size: 0.95rem;
 }
 
 .product-card p {
@@ -43,16 +240,33 @@
   font-weight: 600;
 }
 
+.product-tags {
+  margin-top: 0.8rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.product-tag {
+  background: #e2e8f0;
+  color: #1e293b;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  text-transform: capitalize;
+}
+
 .product-card button {
   background: #00bcd4;
   color: #fff;
   border: none;
-  padding: 0.5em 1.2em;
-  border-radius: 5px;
+  padding: 0.55rem 1.3rem;
+  border-radius: 6px;
   cursor: pointer;
   font-weight: bold;
-  margin-top: 0.5rem;
-  transition: background 0.2s;
+  margin-top: 0.75rem;
+  transition: background 0.2s ease;
 }
 
 .product-card button:hover {
@@ -67,11 +281,18 @@
 
 .product-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
 }
 
 .product-card:hover img {
   transform: scale(1.05);
+}
+
+.products-empty {
+  margin-top: 2rem;
+  text-align: center;
+  color: #52606d;
+  font-weight: 600;
 }
 
 @media (min-width: 600px) {
@@ -91,32 +312,27 @@
     grid-template-columns: repeat(4, 1fr);
   }
 }
-.products-toolbar {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-}
 
-.products-toolbar input[type="text"],
-.products-toolbar input[type="number"] {
-  padding: 0.6rem 0.9rem;
-  border: 1px solid #d0d7de;
-  border-radius: 8px;
-  min-width: 170px;
-}
+@media (max-width: 768px) {
+  .products {
+    padding: 1.5rem 1rem;
+  }
 
-.availability-toggle {
-  display: flex;
-  align-items: center;
-  gap: 0.45rem;
-  font-weight: 600;
-  color: #1f2933;
-}
+  .products-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
 
-.products-empty {
-  margin-top: 2rem;
-  text-align: center;
-  color: #52606d;
-  font-weight: 600;
+  .result-count {
+    align-self: flex-start;
+  }
+
+  .filter-row label {
+    min-width: 140px;
+  }
+
+  .availability-toggle {
+    margin-top: 0.4rem;
+  }
 }

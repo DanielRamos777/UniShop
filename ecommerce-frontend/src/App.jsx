@@ -6,6 +6,7 @@ import LoginForm from "./pages/LoginForm";
 import UserProfile from "./pages/UserProfile";
 import Checkout from "./pages/Checkout";
 import AdminDashboard from "./pages/AdminDashboard";
+import Wishlist from "./pages/Wishlist";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
       <Routes>
         <Route path="/" element={<h2>Bienvenido a UniShop</h2>} />
         <Route path="/productos" element={<ProductList />} />
+        <Route path="/favoritos" element={<Wishlist />} />
         <Route path="/carrito" element={<Cart />} />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/login" element={<LoginForm />} />
