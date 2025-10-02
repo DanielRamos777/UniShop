@@ -55,6 +55,21 @@ function Checkout() {
   const [appliedCoupon, setAppliedCoupon] = useState(null);
   const [couponStatus, setCouponStatus] = useState("");
 
+  const generateOrderToken = () => {
+    const pool = "abcdefghijklmnopqrstuvwxyz0123456789";
+    const randomPart = () => Array.from({ length: 8 }, () => pool[Math.floor(Math.random() * pool.length)]).join("");
+    const existing = new Set();
+    try {
+      const stored = JSON.parse(localStorage.getItem("orders")) || [];
+      stored.forEach((o) => o.token && existing.add(o.token));
+    } catch {}
+    let token = "";
+    do {
+      token = `tok_${randomPart()}`;
+    } while (existing.has(token));
+    return token;
+  };
+
   useEffect(() => {
     if (!user) {
       setForm(emptyForm);
@@ -139,12 +154,14 @@ function Checkout() {
     const orderItems = cart.map((item) => ({ ...item }));
     const shippingData = { ...form };
     const orderId = "ORD-" + Date.now();
+    const token = generateOrderToken();
     const reference = selectedOption.id.toUpperCase() + "-" + Math.floor(Math.random() * 1_000_000);
 
     try {
       const storedOrders = JSON.parse(localStorage.getItem("orders")) || [];
       const newOrder = {
         id: orderId,
+        token,
         date: new Date().toISOString(),
         items: orderItems,
         subtotal: Number(subtotal.toFixed(2)),
@@ -270,6 +287,7 @@ function Checkout() {
     const lines = [
       "UniShop - Comprobante simulado",
       "Pedido: " + order.id,
+      "Token: " + (order.token || "-"),
       "Fecha: " + new Date(order.date).toLocaleString(),
       "Cliente: " + (user?.displayName || order.shipping.nombre || order.userEmail || ""),
       "Correo: " + (order.userEmail || "invitado"),
@@ -308,6 +326,9 @@ function Checkout() {
           <div className="success-details">
             <p>
               <strong>Referencia de pago:</strong> {order.payment.reference}
+            </p>
+            <p>
+              <strong>Token de pedido:</strong> {order.token}
             </p>
             <p>
               <strong>Total pagado:</strong> {formatAmount(order.total)}

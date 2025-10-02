@@ -24,6 +24,8 @@ function AdminDashboard() {
   const { isAdmin, user } = useContext(AuthContext);
   const { products, addProduct, updateProduct, removeProduct, setStock } =
     useContext(ProductContext);
+  const { formatPrice } = useContext(CurrencyContext);
+  const { notify } = useContext(ToastContext);
   const categoryOptions = useMemo(() => {
     const unique = new Set(
       products
@@ -45,6 +47,7 @@ function AdminDashboard() {
 
   const [productForm, setProductForm] = useState(() => ({ ...emptyProduct }));
   const [editingId, setEditingId] = useState(null);
+  const [productErrors, setProductErrors] = useState({});
   const [orders, setOrders] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem("orders")) || [];
@@ -123,7 +126,8 @@ function AdminDashboard() {
       const matchesTerm =
         term.length === 0 ||
         order.id.toLowerCase().includes(term) ||
-        (order.userEmail || "").toLowerCase().includes(term);
+        (order.userEmail || "").toLowerCase().includes(term) ||
+        (order.token || "").toLowerCase().includes(term);
       return matchesStatus && matchesTerm;
     });
   }, [orders, statusFilter, orderSearch]);
@@ -143,10 +147,41 @@ function AdminDashboard() {
     return filteredOrders.slice(start, start + ORDERS_PER_PAGE);
   }, [filteredOrders, orderPage]);
 
+  const isValidHttpUrl = (value) => {
+    if (!value) return true; // optional
+    try {
+      const url = new URL(value);
+      return url.protocol === "http:" || url.protocol === "https:";
+    } catch {
+      return false;
+    }
+  };
+
+  const validateProductForm = (form) => {
+    const errors = {};
+    const precio = Number(form.precio);
+    const stock = Number(form.stock);
+    if (!Number.isFinite(precio) || precio <= 0) {
+      errors.precio = "El precio debe ser un numero mayor a 0.";
+    }
+    if (!Number.isFinite(stock) || stock < 0) {
+      errors.stock = "El stock debe ser un numero mayor o igual a 0.";
+    }
+    if (form.imagen && !isValidHttpUrl(form.imagen)) {
+      errors.imagen = "Ingresa una URL valida (http/https).";
+    }
+    if (!form.nombre || !form.nombre.trim()) {
+      errors.nombre = "El nombre es obligatorio.";
+    }
+    return errors;
+  };
+
   const handleProductSubmit = (event) => {
     event.preventDefault();
-    if (!productForm.nombre || !productForm.precio || !productForm.stock) {
-      notify("Completa nombre, precio y stock para guardar el producto.", { type: "warning" });
+    const errors = validateProductForm(productForm);
+    setProductErrors(errors);
+    if (Object.keys(errors).length > 0) {
+      notify("Revisa los campos: hay errores en el formulario.", { type: "warning" });
       return;
     }
 
@@ -177,6 +212,7 @@ function AdminDashboard() {
 
     setProductForm({ ...emptyProduct });
     setEditingId(null);
+    setProductErrors({});
   };
 
   const startEdit = (product) => {
@@ -305,11 +341,19 @@ function AdminDashboard() {
 
     entries.forEach((entry, index) => {
       const nombre = (entry.nombre || entry.name || "").trim();
-      const precioValue = Number(entry.precio || entry.price);
-      const stockValue = Number(entry.stock || entry.quantity || entry.qty);
+      const precioValue = Number(entry.precio ?? entry.price);
+      const stockValue = Number(entry.stock ?? entry.quantity ?? entry.qty);
       const imagen = (entry.imagen || entry.image || entry.url || "").trim();
 
-      if (!nombre || Number.isNaN(precioValue) || Number.isNaN(stockValue)) {
+      const invalid =
+        !nombre ||
+        !Number.isFinite(precioValue) ||
+        precioValue <= 0 ||
+        !Number.isFinite(stockValue) ||
+        stockValue < 0 ||
+        (imagen && !isValidHttpUrl(imagen));
+
+      if (invalid) {
         errors.push(index + 1);
         return;
       }
@@ -402,6 +446,9 @@ function AdminDashboard() {
               }
               required
             />
+            {productErrors?.nombre && (
+              <span className="input-error">{productErrors.nombre}</span>
+            )}
           </label>
           <label>
             Precio base (PEN)
@@ -414,6 +461,9 @@ function AdminDashboard() {
               }
               required
             />
+            {productErrors?.precio && (
+              <span className="input-error">{productErrors.precio}</span>
+            )}
           </label>
           <label>
             Stock
@@ -426,6 +476,9 @@ function AdminDashboard() {
               }
               required
             />
+            {productErrors?.stock && (
+              <span className="input-error">{productErrors.stock}</span>
+            )}
           </label>
           <label>
             Categoria
@@ -465,6 +518,9 @@ function AdminDashboard() {
               }
               placeholder="https://..."
             />
+            {productErrors?.imagen && (
+              <span className="input-error">{productErrors.imagen}</span>
+            )}
           </label>
           <label className="descripcion-field">
             Descripcion
@@ -650,7 +706,7 @@ function AdminDashboard() {
                 Buscar
                 <input
                   type="text"
-                  placeholder="ID o correo"
+                  placeholder="ID, correo o token"
                   value={orderSearch}
                   onChange={(e) => setOrderSearch(e.target.value)}
                 />
@@ -669,6 +725,7 @@ function AdminDashboard() {
               <thead>
                 <tr>
                   <th>Pedido</th>
+                  <th>Token</th>
                   <th>Cliente</th>
                   <th>Fecha</th>
                   <th>Total</th>
@@ -680,6 +737,7 @@ function AdminDashboard() {
                 {paginatedOrders.map((order) => (
                   <tr key={order.id}>
                     <td>{order.id}</td>
+                    <td>{order.token || "-"}</td>
                     <td>{order.userEmail}</td>
                     <td>{new Date(order.date).toLocaleString()}</td>
                     <td>{formatPrice(Number(order.total || 0))}</td>

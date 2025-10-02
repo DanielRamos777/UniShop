@@ -76,6 +76,7 @@ function UserProfile() {
       const matchesTerm =
         term.length === 0 ||
         order.id.toLowerCase().includes(term) ||
+        (order.token || "").toLowerCase().includes(term) ||
         order.items.some((item) => item.nombre.toLowerCase().includes(term));
       return matchesStatus && matchesTerm;
     });
@@ -234,7 +235,7 @@ function UserProfile() {
               Buscar
               <input
                 type="text"
-                placeholder="ID o producto"
+                placeholder="ID, token o producto"
                 value={orderSearch}
                 onChange={(event) => setOrderSearch(event.target.value)}
               />
@@ -255,6 +256,7 @@ function UserProfile() {
                   <div className="order-meta">
                     <span>Fecha: {formatDate(order.date)}</span>
                     <span>Total: {formatPrice(order.total || 0)}</span>
+                    {order.token && <span>Token: {order.token}</span>}
                     {order.coupon && <span>Cupon: {order.coupon}</span>}
                   </div>
                   <details>

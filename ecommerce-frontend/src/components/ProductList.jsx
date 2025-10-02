@@ -1,8 +1,7 @@
 ﻿import React, { useContext, useMemo } from "react";
-import { CartContext } from "../context/CartContext";
 import { ProductContext } from "../context/ProductContext";
-import { WishlistContext } from "../context/WishlistContext";
 import { CurrencyContext } from "../context/CurrencyContext";
+import ProductCard from "./ProductCard";
 import "./ProductList.css";
 
 const currencySymbols = {
@@ -12,7 +11,6 @@ const currencySymbols = {
 };
 
 function ProductList() {
-  const { addToCart } = useContext(CartContext);
   const {
     filteredProducts,
     filters,
@@ -22,7 +20,6 @@ function ProductList() {
     availableCategories,
     availableTags,
   } = useContext(ProductContext);
-  const { canManageWishlist, isInWishlist, toggleWishlist } = useContext(WishlistContext);
   const { formatPrice, currency, convert, baseCurrency } = useContext(CurrencyContext);
 
   const currencySymbol = currencySymbols[currency] || currency;
@@ -68,13 +65,7 @@ function ProductList() {
     updateFilters({ onlyAvailable: event.target.checked });
   };
 
-  const handleWishlist = (product) => {
-    if (!canManageWishlist) {
-      window.alert("Inicia sesion para guardar favoritos.");
-      return;
-    }
-    toggleWishlist(product.id);
-  };
+  // Wishlist interactions live inside ProductCard
 
   const visibleTags = availableTags.slice(0, 12);
 
@@ -195,44 +186,9 @@ function ProductList() {
         </p>
       ) : (
         <div className="product-grid">
-          {filteredProducts.map((product) => {
-            const favorited = isInWishlist(product.id);
-            return (
-              <article key={product.id} className="product-card">
-                <div className="product-card-header">
-                  <span className="product-category">{product.categoria}</span>
-                  <button
-                    type="button"
-                    className={`wishlist-button${favorited ? " is-active" : ""}`}
-                    onClick={() => handleWishlist(product)}
-                  >
-                    {favorited ? "En favoritos" : "Guardar"}
-                  </button>
-                </div>
-                <img src={product.imagen} alt={product.nombre} />
-                <h3>{product.nombre}</h3>
-                {product.descripcion && (
-                  <p className="product-description">{product.descripcion}</p>
-                )}
-                <p>Precio: {formatPrice(product.precio)}</p>
-                <p className={product.stock > 0 ? "stock-ok" : "stock-out"}>
-                  Stock: {product.stock}
-                </p>
-                {product.etiquetas.length > 0 && (
-                  <div className="product-tags">
-                    {product.etiquetas.map((tag) => (
-                      <span key={tag} className="product-tag">
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                )}
-                <button disabled={product.stock <= 0} onClick={() => addToCart(product)}>
-                  {product.stock > 0 ? "Agregar al carrito" : "Sin stock"}
-                </button>
-              </article>
-            );
-          })}
+          {filteredProducts.map((product) => (
+            <ProductCard key={product.id} product={product} />
+          ))}
         </div>
       )}
     </div>

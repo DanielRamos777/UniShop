@@ -295,6 +295,89 @@
   font-weight: 600;
 }
 
+/* Extra actions and modal styles */
+.product-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-top: 0.5rem;
+}
+
+.product-card .secondary {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.product-card .secondary:hover {
+  background: #cbd5e1;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1500;
+  animation: fadeIn 0.2s ease both;
+}
+
+.modal {
+  width: min(92vw, 720px);
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  padding: 1rem;
+  animation: slideIn 0.25s ease both;
+}
+
+.modal-close {
+  border: none;
+  background: transparent;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  float: right;
+}
+
+.modal-body {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 1rem;
+}
+
+.modal-image {
+  width: 100%;
+  height: 180px;
+  object-fit: contain;
+  background: #f8fafc;
+  border-radius: 8px;
+}
+
+.modal-title { margin: 0 0 0.5rem; }
+.modal-description { color: #4b5563; }
+.modal-price { font-weight: 700; margin-top: 0.5rem; }
+.modal-stock { color: #2e7d32; }
+
+.modal-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+@keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
+@keyframes slideIn { from { transform: translateY(8px); opacity: 0 } to { transform: translateY(0); opacity: 1 } }
+
+@media (max-width: 640px) {
+  .modal-body {
+    grid-template-columns: 1fr;
+  }
+  .modal-image {
+    height: 220px;
+  }
+}
+
 @media (min-width: 600px) {
   .product-grid {
     grid-template-columns: repeat(2, 1fr);

@@ -16,21 +16,15 @@ const locales = {
 export const CurrencyContext = createContext();
 
 export function CurrencyProvider({ children }) {
-  const [currency, setCurrency] = useState(() => {
-    try {
-      return localStorage.getItem("currency") || defaultCurrency;
-    } catch {
-      return defaultCurrency;
-    }
-  });
+  const [currency, setCurrency] = useState(() => defaultCurrency);
 
   useEffect(() => {
     try {
-      localStorage.setItem("currency", currency);
+      localStorage.setItem("currency", defaultCurrency);
     } catch {
       /* ignore */
     }
-  }, [currency]);
+  }, []);
 
   const convert = useMemo(() => {
     return (amount, fromCurrency = baseCurrency, toCurrency = currency) => {

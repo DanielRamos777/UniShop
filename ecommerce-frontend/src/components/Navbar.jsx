@@ -4,7 +4,6 @@ import { CartContext } from "../context/CartContext";
 import { AuthContext } from "../context/AuthContext";
 import { WishlistContext } from "../context/WishlistContext";
 import { ProductContext } from "../context/ProductContext";
-import CurrencySelector from "./CurrencySelector";
 import "./Navbar.css";
 
 function Navbar() {
@@ -52,7 +51,7 @@ function Navbar() {
           aria-expanded={menuOpen}
           type="button"
         >
-          Menu
+          {menuOpen ? "✕" : "☰"}
         </button>
       </div>
 
@@ -67,7 +66,6 @@ function Navbar() {
           />
           <button type="submit">Buscar</button>
         </form>
-        <CurrencySelector />
       </div>
 
       <ul className={`navbar-links ${menuOpen ? "active" : ""}`}>

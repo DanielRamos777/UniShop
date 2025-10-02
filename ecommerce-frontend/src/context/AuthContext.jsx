@@ -62,10 +62,52 @@ export function AuthProvider({ children }) {
     else localStorage.removeItem("usuario");
   }, [user]);
 
+  const RATE_LIMIT_WINDOW_MS = 60_000; // 1 minute
+  const RATE_LIMIT_MAX_ATTEMPTS = 5;
+
+  const readAttempts = (key) => {
+    try {
+      const raw = localStorage.getItem(key);
+      const arr = raw ? JSON.parse(raw) : [];
+      const now = Date.now();
+      const fresh = arr.filter((ts) => now - ts < RATE_LIMIT_WINDOW_MS);
+      return fresh;
+    } catch {
+      return [];
+    }
+  };
+
+  const writeAttempts = (key, attempts) => {
+    try {
+      localStorage.setItem(key, JSON.stringify(attempts));
+    } catch {
+      /* ignore */
+    }
+  };
+
+  const checkRateLimit = (action, identifier = "global") => {
+    const key = `rate:${action}:${identifier}`;
+    const attempts = readAttempts(key);
+    if (attempts.length >= RATE_LIMIT_MAX_ATTEMPTS) {
+      const now = Date.now();
+      const oldest = attempts[0];
+      const retryAfterMs = Math.max(0, RATE_LIMIT_WINDOW_MS - (now - oldest));
+      const seconds = Math.ceil(retryAfterMs / 1000);
+      const err = new Error(
+        `Demasiados intentos. Intenta nuevamente en ${seconds}s.`
+      );
+      err.code = "RATE_LIMITED";
+      throw err;
+    }
+    const next = [...attempts, Date.now()];
+    writeAttempts(key, next);
+  };
+
   const login = async (email, password) => {
     if (!email || !password) throw new Error("Completa tus credenciales");
 
     const normalizedEmail = email.trim().toLowerCase();
+    checkRateLimit("login", normalizedEmail);
     const now = new Date().toISOString();
 
     if (
@@ -102,6 +144,7 @@ export function AuthProvider({ children }) {
     if (!email || !password) throw new Error("Completa tus credenciales");
 
     const normalizedEmail = email.trim().toLowerCase();
+    checkRateLimit("register", normalizedEmail);
 
     if (normalizedEmail === ADMIN_CREDENTIALS.email) {
       throw new Error("Ese correo esta reservado para el administrador.");
@@ -121,6 +164,7 @@ export function AuthProvider({ children }) {
   };
 
   const loginWithGoogle = async () => {
+    checkRateLimit("login-google", "global");
     const email = "googleuser@correo.com";
     const now = new Date().toISOString();
     const stored = loadProfile(email);

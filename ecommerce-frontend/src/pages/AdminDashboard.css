@@ -108,6 +108,14 @@
   font-weight: 500;
 }
 
+.input-error {
+  display: block;
+  margin-top: 0.35rem;
+  font-size: 0.85rem;
+  color: #c62828;
+  font-weight: 600;
+}
+
 .product-form button {
   grid-column: 1 / -1;
   justify-self: flex-start;
