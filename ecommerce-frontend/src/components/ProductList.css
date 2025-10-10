@@ -419,3 +419,49 @@
     margin-top: 0.4rem;
   }
 }
+/* Minimal cards for listing with modal trigger */
+.product-mini {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
+}
+.product-mini__media {
+  background: #f8fafc;
+}
+.product-mini__media img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  display: block;
+}
+.product-mini__body {
+  padding: 0.75rem 0.9rem 0;
+}
+.product-mini__title {
+  margin: 0 0 4px;
+  font-size: 1rem;
+}
+.product-mini__price {
+  margin: 0 0 0.5rem;
+  font-weight: 700;
+}
+.product-mini__actions {
+  padding: 0 0.9rem 0.9rem;
+}
+.product-mini__more {
+  width: 100%;
+  border: 1px solid #0ea5e9;
+  background: #0ea5e9;
+  color: #fff;
+  border-radius: 10px;
+  padding: 0.55rem 0.9rem;
+  cursor: pointer;
+}
+
+@media (max-width: 640px) {
+  .product-mini__media img { height: 140px; }
+}

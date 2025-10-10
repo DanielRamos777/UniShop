@@ -47,7 +47,7 @@ function Navbar() {
         <button
           className="navbar-toggle"
           onClick={toggleMenu}
-          aria-label={menuOpen ? "Cerrar menu" : "Abrir menu"}
+          aria-label={menuOpen ? "Cerrar menú" : "Abrir menú"}
           aria-expanded={menuOpen}
           type="button"
         >
@@ -59,7 +59,7 @@ function Navbar() {
         <form className="navbar-search" onSubmit={handleSearchSubmit}>
           <input
             type="search"
-            placeholder="Buscar por nombre o categoria"
+            placeholder="Buscar por nombre o categoría"
             value={searchValue}
             onChange={handleSearchChange}
             aria-label="Buscar productos"

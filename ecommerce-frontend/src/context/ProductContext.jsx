@@ -99,12 +99,19 @@ const normalizeProduct = (product) => {
   const id = Number(product.id);
   const precio = Number(product.precio);
   const stock = Number(product.stock);
+  const imageList = Array.isArray(product.imagenes)
+    ? product.imagenes
+        .map((u) => (u ? u.toString().trim() : ""))
+        .filter((u) => u.length > 0)
+    : (product.imagen ? [product.imagen] : []);
+  const safeImages = imageList.length > 0 ? imageList : ["https://via.placeholder.com/800x600?text=Producto"];
   return {
     id: Number.isFinite(id) ? id : Date.now(),
     nombre: product.nombre?.toString().trim() || "Producto sin nombre",
     precio: Number.isFinite(precio) ? precio : 0,
     stock: Number.isFinite(stock) ? stock : 0,
-    imagen: product.imagen || "https://via.placeholder.com/150",
+    imagen: (product.imagen || safeImages[0] || "https://via.placeholder.com/150"),
+    imagenes: safeImages,
     categoria: product.categoria?.toString().trim() || "General",
     etiquetas: normalizeTags(product.etiquetas),
     descripcion: product.descripcion?.toString().trim() || "",

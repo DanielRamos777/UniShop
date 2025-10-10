@@ -1,4 +1,4 @@
-﻿import React, { useContext, useMemo } from "react";
+import React, { useContext, useMemo } from "react";
 import { ProductContext } from "../context/ProductContext";
 import { CurrencyContext } from "../context/CurrencyContext";
 import ProductCard from "./ProductCard";
@@ -7,7 +7,7 @@ import "./ProductList.css";
 const currencySymbols = {
   PEN: "S/",
   USD: "$",
-  EUR: "€",
+  EUR: "�",
 };
 
 function ProductList() {

@@ -42,7 +42,7 @@ export function ToastProvider({ children }) {
         {toasts.map((toast) => (
           <div key={toast.id} className={`toast toast--${toast.type}`}>
             <span>{toast.message}</span>
-            <button type="button" onClick={() => removeToast(toast.id)} aria-label="Cerrar notificacion">
+            <button type="button" onClick={() => removeToast(toast.id)} aria-label="Cerrar notificación">
               ×
             </button>
           </div>
